@@ -34,3 +34,6 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## 注意
+- 每次修改prisma schema文件时要执行以下命令`npx prisma generate`，它会生成与表结构对应的 TypeScript 或 JavaScript 代码，用于执行数据库查询、插入、更新和删除等操作的函数，以及相关的类型定义。 执行`npx prisma studio`在`localhost:5555`查看表结构，执行`npx prisma db push`把定义的数据模型同步到远程数据库
