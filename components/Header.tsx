@@ -1,6 +1,9 @@
 import Image from 'next/image';
 import { logoutAction } from './logoutAction';
-import { getSession } from './session';
+// import { getSession } from './session';
+import { getSession } from 'next-auth/react';
+
+// import { getSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import styles from './header.module.less';
 import DefaultAvatar from '@/app/assets/img/default-avatar.jpeg';
@@ -18,6 +21,7 @@ const Header = () => {
    */
   const handleGetSession = async () => {
     const session = await getSession();
+    console.log('session', session);
     setUser(session?.user);
   };
 

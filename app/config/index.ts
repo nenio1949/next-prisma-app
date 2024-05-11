@@ -1,6 +1,6 @@
 const siteConfig = {
   name: 'Next Prisma App',
-  whiteRoutes: ['/login'],
+  whiteRoutes: ['/login', '/register'],
 };
 
 export default siteConfig;

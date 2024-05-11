@@ -1,15 +1,18 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { signIn } from '@/auth';
-import { LoginUserInput, loginUserSchema } from '@/lib/user-prisma';
-import { loginAction } from './loginAction';
-import styles from './login.module.less';
-import { Button, Form, Input, Spin, message, Image } from 'antd';
+import { useEffect, useState } from 'react';
+import { redirect, useRouter, useSearchParams } from 'next/navigation';
+import { Button, Form, Input, Spin, Image } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import Link from 'next/link';
+import { login, getSession } from './loginAction';
+
+import styles from './login.module.less';
+
+type FormValues = {
+  email: string;
+  password: string;
+};
 
 export default function LoginForm() {
   const router = useRouter();
@@ -19,42 +22,28 @@ export default function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
 
-  const methods = useForm<LoginUserInput>({
-    resolver: zodResolver(loginUserSchema),
-  });
+  useEffect(() => {
+    handleGetSession();
+  }, []);
 
-  const {
-    reset,
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = methods;
+  /**
+   * 获取session
+   */
+  const handleGetSession = async () => {
+    const session = await getSession();
+    if (session) {
+      redirect('/');
+    }
+  };
 
-  const onSubmitHandler: SubmitHandler<LoginUserInput> = async (values) => {
-    console.log('222', values);
-    try {
-      setLoading(true);
-
-      const res = await signIn('credentials', {
-        redirect: false,
-        email: values.email,
-        password: values.password,
-        redirectTo: callbackUrl,
-      });
-
-      setLoading(false);
-
-      if (!res?.error) {
-        message.success('登录成功');
-        router.push(callbackUrl);
-      } else {
-        reset({ password: '' });
-        message.error('账号或密码错误');
-      }
-    } catch (error: any) {
-      message.error(error.message);
-    } finally {
-      setLoading(false);
+  const handleSubmit = async (values: FormValues) => {
+    setLoading(true);
+    const res = await login('credentials', values, callbackUrl);
+    console.log('555', res);
+    setLoading(false);
+    if (!res?.error) {
+      router.push(callbackUrl);
+      router.refresh();
     }
   };
 
@@ -62,7 +51,7 @@ export default function LoginForm() {
     <div className={styles.container}>
       <h1>登录</h1>
       <Spin spinning={loading}>
-        <Form form={form} onFinish={handleSubmit(onSubmitHandler)}>
+        <Form form={form} onFinish={handleSubmit}>
           <Form.Item name='email' label='邮箱' rules={[{ required: true, message: '请输入你的邮箱!' }]}>
             <Input
               type='email'
@@ -70,7 +59,6 @@ export default function LoginForm() {
               placeholder='请输入邮箱'
               size='large'
               allowClear
-              {...register('email')}
             />
           </Form.Item>
           <Form.Item name='password' label='密码' rules={[{ required: true, message: '请输入你的密码!' }]}>
@@ -81,7 +69,6 @@ export default function LoginForm() {
               placeholder='请输入密码'
               size='large'
               allowClear
-              {...register('password')}
             />
           </Form.Item>
           <Form.Item>
@@ -90,18 +77,22 @@ export default function LoginForm() {
             </Button>
           </Form.Item>
         </Form>
-      </Spin>
-      <ul>
-        {/* <li>
+        <span className={styles.register}>
+          还没有账号？点击<Link href='/register'>注册</Link>
+        </span>
+        <h3>其他方式登录</h3>
+        <ul>
+          {/* <li>
           <Image src={GoogleLogo} alt='' />
         </li> */}
-        <li
-          onClick={async () => {
-            await loginAction('github', '/');
-          }}>
-          <Image src='/github.svg' alt='github登录' title='github登录' width={50} height={50} preview={false} />
-        </li>
-      </ul>
+          <li
+            onClick={async () => {
+              await login('github', undefined, '/');
+            }}>
+            <Image src='/github.svg' alt='github登录' title='github登录' width={50} height={50} preview={false} />
+          </li>
+        </ul>
+      </Spin>
     </div>
     // <form onSubmit={handleSubmit(onSubmitHandler)}>
     //   {error && <p className='text-center bg-red-300 py-4 mb-6 rounded'>{error}</p>}
