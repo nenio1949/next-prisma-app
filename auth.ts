@@ -27,25 +27,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: {},
       },
       async authorize(credentials, req) {
-        console.log('111', credentials);
         const account = await prisma.account.findFirst({
           where: {
             login: credentials?.email as string | undefined,
           },
         });
-        console.log('222', account);
         if (account) {
           // 验证密码
           console.log('密码对比', credentials?.password, account.password);
           const passwordCorrect = await compare(credentials?.password as string, account.password as string);
-          console.log('333', passwordCorrect);
           if (passwordCorrect) {
             const user = await prisma.user.findUnique({
               where: {
                 email: credentials?.email as string,
               },
             });
-            console.log('444', user);
             if (user) {
               return user;
             } else {
@@ -61,18 +57,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   adapter: PrismaAdapter(prisma),
+  useSecureCookies: process.env.NODE_ENV === 'production',
   secret: process.env.SECRET, // 目前生产环境是必须的
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
-      console.log(
-        `${JSON.stringify(user)} \n ${JSON.stringify(account)}\n ${profile}\n  ${email}\n ${JSON.stringify(
-          credentials
-        )}`
-      );
       return !!user;
     },
     async jwt({ token, user, account, profile, session }) {
-      console.log(`0000 ${JSON.stringify(token)} \n ${JSON.stringify(account)} ${JSON.stringify(session)}`);
       return {
         ...token,
         ...user,
@@ -80,14 +71,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     // 调用 getSession 和 useSession 时会触发
     // 文档可查看 https://next-auth.js.org/configuration/callbacks
-    async session({ session, token, user }) {
-      console.log('999', session, token, user);
+    async session({ session, token }) {
       return {
         ...session,
         acessToken: token,
         user: {
           ...session.user,
-          id: user.id,
+          id: token.id,
         },
       };
     },

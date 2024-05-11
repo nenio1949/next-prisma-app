@@ -2,6 +2,13 @@
 import { signIn, auth } from '@/auth';
 import { FormValues } from '../register/form';
 
+/**
+ * 登录
+ * @param type 类型(谷歌|github|账号)
+ * @param formData
+ * @param callbackUrl 回调地址
+ * @returns
+ */
 export async function login(type: 'google' | 'github' | 'credentials', formData?: FormValues, callbackUrl?: string) {
   if (type === 'credentials') {
     return await signIn(type, {

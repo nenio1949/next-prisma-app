@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import styles from './header.module.less';
 import DefaultAvatar from '@/app/assets/img/default-avatar.jpeg';
 import { Button, Popover } from 'antd';
+import Link from 'next/link';
 
 const Header = () => {
   const [user, setUser] = useState<any>();
@@ -49,7 +50,7 @@ const Header = () => {
               <span>{user?.name}</span>
             </Popover>
           ) : (
-            '登录'
+            <Link href='/login'>登录</Link>
           )}
         </li>
       </ul>
