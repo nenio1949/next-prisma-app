@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { getSession } from './session';
+import { getSession } from '@/lib/serverAction';
 import siteConfig from '@/app/config';
 
 interface Props extends React.PropsWithChildren {}

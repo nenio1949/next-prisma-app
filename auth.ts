@@ -14,6 +14,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   providers: [
     GitHubProvider({
+      name: 'github',
       clientId: process.env.GITHUB_CLIENT_ID as string,
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
       // httpOptions: {
@@ -21,7 +22,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // },
     }),
     CredentialsProvider({
-      name: 'Credentials',
+      name: 'credentials',
       credentials: {
         email: {},
         password: {},
@@ -34,7 +35,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         });
         if (account) {
           // 验证密码
-          console.log('密码对比', credentials?.password, account.password);
           const passwordCorrect = await compare(credentials?.password as string, account.password as string);
           if (passwordCorrect) {
             const user = await prisma.user.findUnique({

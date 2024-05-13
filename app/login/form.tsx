@@ -5,7 +5,7 @@ import { redirect, useRouter, useSearchParams } from 'next/navigation';
 import { Button, Form, Input, Spin, Image } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import Link from 'next/link';
-import { login, getSession } from './loginAction';
+import { login, getSession } from '@/lib/serverAction';
 
 import styles from './login.module.less';
 

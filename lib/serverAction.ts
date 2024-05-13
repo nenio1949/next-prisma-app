@@ -1,6 +1,7 @@
 'use server';
-import { signIn, auth } from '@/auth';
-import { FormValues } from '../register/form';
+
+import { signIn, signOut, auth } from '@/auth';
+import { LoginForm } from '@/types';
 
 /**
  * 登录
@@ -9,7 +10,7 @@ import { FormValues } from '../register/form';
  * @param callbackUrl 回调地址
  * @returns
  */
-export async function login(type: 'google' | 'github' | 'credentials', formData?: FormValues, callbackUrl?: string) {
+export async function login(type: 'google' | 'github' | 'credentials', formData?: LoginForm, callbackUrl?: string) {
   if (type === 'credentials') {
     return await signIn(type, {
       email: formData?.email,
@@ -25,6 +26,17 @@ export async function login(type: 'google' | 'github' | 'credentials', formData?
   }
 }
 
+/**
+ * 登出
+ */
+export const logout = async () => {
+  await signOut({ redirectTo: '/login' });
+};
+
+/**
+ * 获取session
+ * @returns
+ */
 export const getSession = async () => {
   return await auth();
 };

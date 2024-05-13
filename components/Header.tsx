@@ -1,14 +1,10 @@
-import Image from 'next/image';
-import { logoutAction } from './logoutAction';
-// import { getSession } from './session';
-import { getSession } from 'next-auth/react';
-
-// import { getSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Button, Popover } from 'antd';
+import { getSession, logout } from '@/lib/serverAction';
 import styles from './header.module.less';
 import DefaultAvatar from '@/app/assets/img/default-avatar.jpeg';
-import { Button, Popover } from 'antd';
-import Link from 'next/link';
 
 const Header = () => {
   const [user, setUser] = useState<any>();
@@ -41,7 +37,7 @@ const Header = () => {
                   <Button
                     type='link'
                     onClick={async () => {
-                      await logoutAction();
+                      await logout();
                     }}>
                     退出登录
                   </Button>
