@@ -5,10 +5,10 @@ import { redirect, useRouter, useSearchParams } from 'next/navigation';
 import { Button, Form, Input, Spin, Image } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import Link from 'next/link';
-import { login, getSession } from '@/lib/serverAction';
+import { getSession } from '@/lib/serverAction';
 
 import styles from './login.module.less';
-
+import { loginWithGithub, loginWithCredentials } from './loginAction';
 type FormValues = {
   email: string;
   password: string;
@@ -22,29 +22,28 @@ export default function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
 
-  useEffect(() => {
-    handleGetSession();
-  }, []);
+  // useEffect(() => {
+  //   handleGetSession();
+  // }, []);
 
-  /**
-   * 获取session
-   */
-  const handleGetSession = async () => {
-    const session = await getSession();
-    if (session) {
-      redirect('/');
-    }
-  };
+  // /**
+  //  * 获取session
+  //  */
+  // const handleGetSession = async () => {
+  //   const session = await getSession();
+  //   if (session) {
+  //     redirect('/');
+  //   }
+  // };
 
   const handleSubmit = async (values: FormValues) => {
     setLoading(true);
-    const res = await login('credentials', values, callbackUrl);
-    console.log('555', res);
+    await loginWithCredentials(values, callbackUrl);
     setLoading(false);
-    if (!res?.error) {
-      router.push(callbackUrl);
-      router.refresh();
-    }
+    // if (!res?.error) {
+    //   router.push(callbackUrl);
+    //   router.refresh();
+    // }
   };
 
   return (
@@ -87,7 +86,8 @@ export default function LoginForm() {
         </li> */}
           <li
             onClick={async () => {
-              await login('github', undefined, '/');
+              await loginWithGithub();
+              // await login('github', undefined, '/');
             }}>
             <Image src='/github.svg' alt='github登录' title='github登录' width={50} height={50} preview={false} />
           </li>
